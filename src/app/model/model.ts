@@ -17,10 +17,10 @@ export interface Articles {
   title?:           string;
   description?:     string;
   publicationDate?: Date;
-  categoryList?:    CategoryList[];
+  categoryList?:    Category[];
 }
 
-export interface CategoryList {
+export interface Category {
   id?:          number;
   name?:        string;
   description?: string;
