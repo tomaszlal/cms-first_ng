@@ -1,1 +1,52 @@
-<p>category works!</p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-3">
+      <!-- lista w bloku kategroii ze scrolem auto -->
+      <div class="border border-secondary rounded-2 p-2 m-2 overflow-auto">
+        <div class="h5 text-muted">Kategoria artykułu</div>
+        <hr>
+        <div class="mb-3 form-check">
+          <ng-container *ngFor="let category of listCaregories">
+            <input type="checkbox" class="form-check-input" id="check{{category.id}}" >
+            <label class="form-check-label" for="check{{category.id}}">{{category.name}} - {{category.description}}</label>
+            <br>
+          </ng-container>
+
+        </div>
+      </div>
+      <div class="border border-secondary rounded-2 p-2 m-2">
+        <div class="h5 text-muted">Dodaj kategorię artykułu</div>
+        <form [formGroup]="categoryForm" (submit)="saveCategoryToDb()">
+
+
+          <label class="form-label">Symbol kategorii</label>
+          <input type="text" class="form-control" id="category-name" formControlName="categoryName">
+          <div class="small text-danger" *ngIf="getCategoryName?.invalid && getCategoryName?.touched">Wprowadź minimum
+            3
+            znaki
+          </div>
+
+          <label class="form-label">Opis kategorii</label>
+          <input type="text" class="form-control" id="category-description" formControlName="categoryDescription">
+          <div class="small text-danger" *ngIf="getCategoryDescription?.invalid && getCategoryDescription?.touched">
+            Wprowadź minimum 5 znaków
+          </div>
+          <hr>
+          <button class="btn btn-primary" id="buttonAddCategory" [disabled]="!categoryForm.valid">Dodaj
+            kategorię</button>
+
+
+        </form>
+      </div>
+
+    </div>
+
+    <div class="col">
+      <div class="border border-secondary rounded-2 p-2 m-2">
+        <div class="h5 text-muted">Dodaj artykuł</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
