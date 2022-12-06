@@ -2,27 +2,16 @@
   <div class="row">
     <div class="col-3">
       <!-- lista w bloku kategroii ze scrolem auto -->
-      <div class="border border-secondary rounded-2 p-2 m-2 overflow-auto">
-        <div class="h5 text-muted">Kategoria artykułu</div>
-        <hr>
-        <div class="mb-3 form-check">
-          <ng-container *ngFor="let category of listCaregories">
-            <input type="checkbox" class="form-check-input" id="check{{category.id}}" >
-            <label class="form-check-label" for="check{{category.id}}">{{category.name}} - {{category.description}}</label>
-            <br>
-          </ng-container>
 
-        </div>
-      </div>
       <div class="border border-secondary rounded-2 p-2 m-2">
         <div class="h5 text-muted">Dodaj kategorię artykułu</div>
+        <hr>
         <form [formGroup]="categoryForm" (submit)="saveCategoryToDb()">
 
 
           <label class="form-label">Symbol kategorii</label>
           <input type="text" class="form-control" id="category-name" formControlName="categoryName">
-          <div class="small text-danger" *ngIf="getCategoryName?.invalid && getCategoryName?.touched">Wprowadź minimum
-            3
+          <div class="small text-danger" *ngIf="getCategoryName?.invalid && getCategoryName?.touched">Wprowadź minimum 3
             znaki
           </div>
 
@@ -44,6 +33,53 @@
     <div class="col">
       <div class="border border-secondary rounded-2 p-2 m-2">
         <div class="h5 text-muted">Dodaj artykuł</div>
+        <hr>
+
+        <form [formGroup]="articleForm" (submit)="saveArticleToDb()">
+          <label class="form-label">Nazwa artykułu</label>
+          <input type="text" class="form-control" id="articleTitle" formControlName="articleTitle">
+          <div class="small text-danger" *ngIf="getArticleTitle?.invalid && getArticleTitle?.touched">Wprowadź minimum 3
+            znaki</div>
+
+          <label class="form-label">Treść artykułu</label>
+          <textarea class="form-control" id="ArticleDescription" cols="30" rows="10"
+            formControlName="articleDescription"></textarea>
+          <div class="small text-danger" *ngIf="getArticleDescription?.invalid && getArticleDescription?.touched">
+            Wprowadź minimum 3 znaki</div>
+          <div class="row">
+            <div class="col-3">
+              <label class="form-label">Data publikacji</label>
+              <input type="date" class="form-control" id="publicationDate" formControlName="articlePublicationDate">
+            </div>
+            <div class="col">
+              <div class="border border-secondary rounded-2 p-2 mb-1 mt-1 overflow-auto">
+                <div class="h5 text-muted">Kategoria artykułu</div>
+                <hr>
+                <div class="mb-3 form-check ">
+                  <ng-container *ngFor="let category of listCaregories">
+                    <input type="checkbox" class="form-check-input" id="check{{category.id}}" [value]="category.id"
+                      (change)="onCheckChange($event)">
+                    <label class="form-check-label" for="check{{category.id}}">{{category.name}} -
+                      {{category.description}}</label>
+                    <br>
+                  </ng-container>
+
+
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col d-flex justify-content-end">
+              <button class="btn btn-primary" id="buttonAddBill" [disabled]="!articleForm.valid">Dodaj artykuł</button>
+            </div>
+
+          </div>
+        </form>
+
       </div>
     </div>
 

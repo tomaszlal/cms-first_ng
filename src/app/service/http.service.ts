@@ -1,6 +1,7 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CategoryComponent } from '../category/category.component';
 import { Articles, Category, PageArticles } from '../model/model';
 
 @Injectable({
@@ -20,6 +21,18 @@ export class HttpService {
   }
 
   getPageArticles(page: number, size: number): Observable<PageArticles> {
-    return this.http.get<PageArticles>(this.apiUrl + "/articles?page="+page+"&size="+size);
+    return this.http.get<PageArticles>(this.apiUrl + "/articles?page=" + page + "&size=" + size);
+  }
+
+  getPageArticlesByCategory(listOfSelectedCategories: Array<Category>, page: number, size: number): Observable<PageArticles> {
+    return this.http.post<PageArticles>(this.apiUrl + "/articlebycategory?page=" + page + "&size=" + size, listOfSelectedCategories);
+  }
+
+  saveCategory(category: Category): Observable<Category> {
+    return this.http.post<Category>(this.apiUrl + "/addcategory", category);
+  }
+
+  saveArticle(article: Articles): Observable<Articles> {
+    return this.http.post<Articles>(this.apiUrl + "/addarticle", article);
   }
 }

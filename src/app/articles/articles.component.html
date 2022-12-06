@@ -3,50 +3,109 @@
   <div class="row">
     <div class="col-2">
       <h4>Filtruj</h4>
+      <hr>
       <h5>Kategorie</h5>
+      <div class="mb-3 form-check">
+        <ng-container *ngFor="let category of listCaregories">
+          <input type="checkbox" class="form-check-input" id="check{{category.id}}" [value]="category.id"
+            (change)="onCheckChange($event)">
+          <label class="form-check-label" for="check{{category.id}}">{{category.name}} -
+            {{category.description}}</label>
+          <br>
+        </ng-container>
+      </div>
       <h5>Data publikacji</h5>
     </div>
     <div class="col">
-      <form class="d-flex justify-content-end">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-      <br>
-      <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-end">
-          <!-- <li class="page-item active"><a class="page-link" href="#">1</a></li> -->
+      <div class="row align-items-baseline">
+        <div class="col-3">
+          <form class="d-flex justify-content-end">
+            <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        </div>
+        <div class="col d-flex justify-content-end">
+          <label class="form-label">Artykułów na stronę: </label>
+        </div>
+        <div class="col d-flex justify-content-start">
 
-          <ng-container *ngFor="let j of pageNumbers">
-            <li  class="page-item active pe-none" *ngIf="(j-1) == pageNumber;else not_active"><a class="page-link">{{j}}</a>
-            </li>
-            <ng-template #not_active>
-              <li role="button" class="page-item"><a class="page-link" (click)="changePage(j)">{{j}}</a></li>
-            </ng-template>
+          <form [formGroup]="formArticleOnPage">
+            <select class="form-select form-select-sm text-end" formControlName="artOnPage"
+              (change)="setSizeArticlecOnPage()">
+              <option ngValue="{{num}}" *ngFor="let num of arrayOfArticlesOfPage">{{num}}</option>
 
 
+            </select>
+          </form>
+
+        </div>
+        <div class="col">
+          <nav aria-label="Page navigation example" class="d-flex justify-content-end">
+
+            <ul class="pagination mb-2 mt-2">
+              <!-- <li class="page-item active"><a class="page-link" href="#">1</a></li> -->
+
+              <ng-container *ngFor="let j of pageNumbers">
+                <li class="page-item active pe-none" *ngIf="(j-1) == pageNumber;else not_active"><a
+                    class="page-link">{{j}}</a>
+                </li>
+                <ng-template #not_active>
+                  <li role="button" class="page-item"><a class="page-link" (click)="changePage(j)">{{j}}</a></li>
+                </ng-template>
+
+
+              </ng-container>
+
+
+            </ul>
+          </nav>
+        </div>
+
+
+
+
+
+      </div>
+      <div class="row">
+        <div class="col">
+          <hr>
+          <ng-container *ngIf="!pageArticles?.empty;else emptyPageArticles ">
+            <div *ngFor="let articles of pageArticles?.content" class="card mb-2">
+              <div class="card-header">
+                <span *ngFor="let category of articles.categoryList">{{category.name}} , </span>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">{{articles.title}}</h5>
+                <p class="card-text">{{articles.description | shorten:200}}</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+              </div>
+              <div class="card-footer text-muted text-end">
+                Opublikowano : {{articles.publicationDate}}
+              </div>
+            </div>
           </ng-container>
 
+          <ng-template #emptyPageArticles>
+            <div class="text-center">
+              Brak wyników do wyświetlenia
+              <hr>
+            </div>
+          </ng-template>
 
-        </ul>
-      </nav>
 
-
-
-      <ng-container *ngIf="!pageArticles?.empty">
-        <div *ngFor="let articles of pageArticles?.content" class="card mb-2">
-          <div class="card-header">
-            <span *ngFor="let category of articles.categoryList">{{category.name}} , </span>
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">{{articles.title}}</h5>
-            <p class="card-text">{{articles.description}}</p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
-          </div>
-          <div class="card-footer text-muted text-end">
-            Opublikowano : {{articles.publicationDate}}
-          </div>
         </div>
-      </ng-container>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
 
 
     </div>
