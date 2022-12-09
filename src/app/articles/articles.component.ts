@@ -10,17 +10,13 @@ import { HttpService } from '../service/http.service';
 })
 export class ArticlesComponent implements OnInit {
 
-
-
-
-
   title = 'cms-first-ng';
   listArticles: Array<Articles> = new Array();
   listCaregories: Array<Category> = new Array();
   listOfSelectedCatagoriesToView: Array<Category> = new Array();
   pageArticles: PageArticles = { empty: true };
 
-  arrayOfArticlesOfPage: Array<number> = [2, 5, 10, 20]; //pozostałe możliwości wyboru artykułów na stronę
+  arrayOfArticlesOfPage: Array<number> = [5, 10, 20]; //pozostałe możliwości wyboru artykułów na stronę
   sizeArticlesOnPage: number = this.arrayOfArticlesOfPage[0]; //ilość artykułów na stronę - pierwszy element tablicy powyzej
   pageNumber: number = 0;
   totalPages: number = 0;
@@ -34,6 +30,10 @@ export class ArticlesComponent implements OnInit {
     categoryToView: new FormArray([], Validators.required)
   })
 
+  selectedArticle: any = {
+    title : "hffhffgh",
+    description : "hfhfhhfg"
+  };
 
   constructor(private httpService: HttpService,) {
 
@@ -43,6 +43,8 @@ export class ArticlesComponent implements OnInit {
     this.getArticles();
     this.getCategories();
     this.getPageArticles(this.pageNumber, this.sizeArticlesOnPage);
+    console.log(this.listArticles[0]);
+
     console.log(this.pageArticles);
     console.log(this.listArticles);
     console.log(this.listCaregories);
@@ -55,6 +57,7 @@ export class ArticlesComponent implements OnInit {
         this.listArticles.push(articles);
       });
       // this.listArticles = this.listArticles.slice();
+      // this.selectedArticle = this.listArticles[8];
     });
   }
 
@@ -134,6 +137,7 @@ export class ArticlesComponent implements OnInit {
 
 
   onCheckChange(event: any) {
+    this.pageNumber=0;
     this.listOfSelectedCatagoriesToView=[];
 
     const listOfCategories: FormArray = this.getArticleListOfCategory as FormArray;
@@ -176,6 +180,11 @@ export class ArticlesComponent implements OnInit {
       })
     }
 
+  }
+
+  //ustawienie artykułu do okna modalego
+  public setArticleToContext(article: Articles) {
+    this.selectedArticle = article;
   }
 
   //getters do formularza

@@ -9,6 +9,7 @@ import { ArticlesComponent } from './articles/articles.component';
 import { CategoryComponent } from './category/category.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShortenPipe } from './shorten.pipe';
+import { CKEditorModule } from 'ckeditor4-angular';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { ShortenPipe } from './shorten.pipe';
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    CKEditorModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -15,6 +15,7 @@ export interface PageArticles {
 export interface Articles {
   id?:              number;
   title?:           string;
+  shortDescription?:string;
   description?:     string;
   publicationDate?: Date;
   categoryList?:    Category[];

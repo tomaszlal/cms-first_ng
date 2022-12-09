@@ -1,7 +1,6 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CategoryComponent } from '../category/category.component';
 import { Articles, Category, PageArticles } from '../model/model';
 
 @Injectable({

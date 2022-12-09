@@ -10,6 +10,8 @@ import { HttpService } from '../service/http.service';
 })
 export class CategoryComponent implements OnInit {
 
+
+
   listOfSelectedCategories: Array<Category> = new Array();
 
   listCaregories: Array<Category> = new Array();
@@ -21,6 +23,9 @@ export class CategoryComponent implements OnInit {
     categoryName: new FormControl('', [Validators.required, Validators.minLength(3)]),
     categoryDescription: new FormControl('', [Validators.required, Validators.minLength(5)])
   });
+
+//https://github.com/ckeditor/ckeditor5-angular/blob/master/src/app/demo-reactive-form/demo-reactive-form.component.ts
+//sprawdzić to to powyżej
 
 
   public articleForm: FormGroup = new FormGroup({
@@ -74,6 +79,8 @@ export class CategoryComponent implements OnInit {
     this.httpService.saveArticle(newArticle).subscribe((article) =>{
       console.log(article);
       this.articleForm.reset();
+
+
     });
 
   }
