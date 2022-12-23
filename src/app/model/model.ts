@@ -19,12 +19,14 @@ export interface Articles {
   description?:     string;
   publicationDate?: Date;
   categoryList?:    Category[];
+  fileDataList?:    FileData[];
 }
 
 export interface Category {
   id?:          number;
   name?:        string;
   description?: string;
+  checked?:     boolean;
 }
 
 export interface Pageable {
@@ -40,4 +42,13 @@ export interface Sort {
   empty?:    boolean;
   sorted?:   boolean;
   unsorted?: boolean;
+}
+
+export interface FileData {
+  id?:       number;
+  name?:     string;
+  filePath?: string;
+  type?:     string;
+  description?: string;
+  checked?:    boolean;
 }

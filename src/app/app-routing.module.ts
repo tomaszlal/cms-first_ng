@@ -5,7 +5,7 @@ import { CategoryComponent } from './category/category.component';
 
 const routes: Routes = [
   { path: '', component: ArticlesComponent },
-  { path: 'category', component: CategoryComponent }
+  { path: 'addarticle', component: CategoryComponent }
 ];
 
 @NgModule({

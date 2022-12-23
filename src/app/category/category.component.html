@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-3">
+    <div class="col-2">
       <!-- lista w bloku kategroii ze scrolem auto -->
 
       <div class="border border-secondary rounded-2 p-2 m-2">
@@ -28,6 +28,27 @@
         </form>
       </div>
 
+      <div class="border border-secondary rounded-2 p-2 m-2">
+        <div class="h5 text-muted">Wybierz artykuł do edycji</div>
+        <hr>
+        <form [formGroup]="selectArticleToEditForm" (submit)="insertAarticleToEditForm()"   >
+
+          <div class="mb-3">
+            <select class="form-select" formControlName="articleNameToEdit" aria-label="Default select example">
+              <!-- <option [ngValue]="null" selected>Wybierz artykuł ...</option> -->
+              <option *ngFor="let article of listArticles" [ngValue]="article">{{article.title}}</option>
+
+            </select>
+          </div>
+
+          <hr>
+          <button class="btn btn-primary" [disabled]="!selectArticleToEditForm.valid" >Edytuj</button>
+
+
+
+        </form>
+      </div>
+
     </div>
 
     <div class="col">
@@ -45,33 +66,79 @@
           <!-- <textarea class="form-control" id="ArticleDescription" cols="30" rows="10"
             formControlName="articleDescription"></textarea> -->
 
-            <!-- class="form-control" formControlName="articleDescription"    -->
-            <ckeditor class="form-control" formControlName="articleDescription"></ckeditor>
+          <!-- class="form-control" formControlName="articleDescription"    -->
+          <!-- class="form-control" -->
+          <ckeditor formControlName="articleDescription"></ckeditor>
+          <!-- <ckeditor [editor]="Editor"></ckeditor> -->
+          <!-- do ckeditor 5 -->
 
           <div class="small text-danger" *ngIf="getArticleDescription?.invalid && getArticleDescription?.touched">
             Wprowadź minimum 3 znaki</div>
           <div class="row">
-            <div class="col-3">
-              <label class="form-label">Data publikacji</label>
-              <input type="date" class="form-control" id="publicationDate" formControlName="articlePublicationDate">
-            </div>
             <div class="col">
-              <div class="border border-secondary rounded-2 p-2 mb-1 mt-1 overflow-auto">
-                <div class="h5 text-muted">Kategoria artykułu</div>
-                <hr>
-                <div class="mb-3 form-check ">
-                  <ng-container *ngFor="let category of listCaregories">
-                    <input type="checkbox" class="form-check-input" id="check{{category.id}}" [value]="category.id"
+              <div class="row">
+                <div class="col">
+                  <div class="card mt-2">
+                    <div class="card-header">Wybierz plik jako załącznik lub skopiuj adres</div>
+                    <div class="overflow-auto px-2" style="max-height: 200px;">
+                      <table class="table table-striped">
+                        <tbody>
+                          <ng-container *ngFor="let file of listOfFiles">
+                            <!-- <div>{{file.name}} | {{file.filePath}}</div> -->
+                            <tr>
+                              <td class="align-middle"><input type="checkbox" class="form-check-input" id="check-file{{file.id}}"
+                                  [value]="file.id" [checked]="file.checked" (change)="onCheckChangeFiles($event)"></td>
+                              <td class="align-middle"><label class="form-check-label px-2" for="check-file{{file.id}}">{{file.name}}</label>
+                              </td>
+                              <td class="align-middle">{{file.description}}</td>
+                              <td><button type="button" class="btn btn-info btn-sm"
+                                  (click)="copyText(file.filePath)">Kopiuj ścieżkę</button></td>
+                            </tr>
+
+
+                          </ng-container>
+                        </tbody>
+                      </table>
+
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div class="mt-2 mb-2">
+                <label class="form-label mx-3">Załaduj nowy plik na serwer</label><br>
+                <label class="btn btn-default">
+                  <input type="file" class="btn btn-light" (change)="selectFile($event)">
+                </label>
+                <button type="button" class="btn btn-outline-dark" [disabled]="selectedFiles.length == 0"
+                  (click)="uploadFile()">
+                  Upload
+                </button>
+                <br>
+                <label class="form-label mx-3" for="descriptionFile">Podaj opis pliku (tekst odnośnika) lub zostaw
+                  puste</label>
+                <input type="text" class="form-control mx-2" name="" id="descriptionFile" [(ngModel)]="descriptionFile"
+                  [ngModelOptions]="{standalone: true}">
+
+                <span *ngIf="message" class="px-2 small">{{message}}</span>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card mt-2">
+                <div class="card-header">Kategoria artykułu</div>
+                <div class="overflow-auto px-2" style="max-height: 200px;">
+                  <ng-container *ngFor="let category of listCategories">
+                    <input type="checkbox" class="form-check-input" id="check{{category.id}}" [checked]="category.checked" [value]="category.id"
                       (change)="onCheckChange($event)">
-                    <label class="form-check-label" for="check{{category.id}}">{{category.name}} -
+                    <label class="form-check-label px-2" for="check{{category.id}}">{{category.name}} -
                       {{category.description}}</label>
                     <br>
                   </ng-container>
-
-
-
                 </div>
               </div>
+              <label class="form-label mt-1 mx-3">Data publikacji</label>
+              <input type="date" class="form-control" id="publicationDate" formControlName="articlePublicationDate">
             </div>
 
           </div>

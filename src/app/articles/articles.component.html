@@ -1,5 +1,4 @@
 <div class="container-fluid mt-3">
-
   <div class="row">
     <div class="col-2">
       <h4>Filtruj</h4>
@@ -28,23 +27,17 @@
           <label class="form-label">Artykułów na stronę: </label>
         </div>
         <div class="col d-flex justify-content-start">
-
           <form [formGroup]="formArticleOnPage">
             <select class="form-select form-select-sm text-end" formControlName="artOnPage"
               (change)="setSizeArticlecOnPage()">
               <option ngValue="{{num}}" *ngFor="let num of arrayOfArticlesOfPage">{{num}}</option>
-
-
             </select>
           </form>
-
         </div>
         <div class="col">
           <nav aria-label="Page navigation example" class="d-flex justify-content-end">
-
             <ul class="pagination mb-2 mt-2">
               <!-- <li class="page-item active"><a class="page-link" href="#">1</a></li> -->
-
               <ng-container *ngFor="let j of pageNumbers">
                 <li class="page-item active pe-none" *ngIf="(j-1) == pageNumber;else not_active"><a
                     class="page-link">{{j}}</a>
@@ -52,19 +45,10 @@
                 <ng-template #not_active>
                   <li role="button" class="page-item"><a class="page-link" (click)="changePage(j)">{{j}}</a></li>
                 </ng-template>
-
-
               </ng-container>
-
-
             </ul>
           </nav>
         </div>
-
-
-
-
-
       </div>
       <div class="row">
         <div class="col">
@@ -72,10 +56,10 @@
           <ng-container *ngIf="!pageArticles?.empty;else emptyPageArticles ">
             <div *ngFor="let article of pageArticles?.content" class="card mb-2">
               <div class="card-header">
-                <span class="bg-info border-success border-start border-end rounded-1 p-2 mx-1" *ngFor="let category of article.categoryList; let last = last">#{{category.name}}</span>
+                <span class="bg-light border-secondary border-start border-end rounded-1 p-2 mx-1" *ngFor="let category of article.categoryList; let last = last">#{{category.name}}</span>
               </div>
               <div class="card-body">
-                <h4 class="card-title">{{article.title}}</h4>
+                <h4 class="card-title text-primary">{{article.title}}</h4>
                 <p class="card-text">{{article.shortDescription | shorten:200}}</p>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="setArticleToContext(article)">Czytaj więcej ...</button>
               </div>
@@ -84,34 +68,16 @@
               </div>
             </div>
           </ng-container>
-
           <ng-template #emptyPageArticles>
             <div class="text-center">
               Brak wyników do wyświetlenia
               <hr>
             </div>
           </ng-template>
-
-
         </div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
     </div>
   </div>
-
-
 </div>
 
 <!-- Modal viwew article-->
@@ -119,11 +85,19 @@
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">{{selectedArticle.title}}</h5>
+        <h5 class="modal-title text-primary h2" id="staticBackdropLabel">{{selectedArticle.title}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body" >
-        <div [innerHTML]="selectedArticle.description"></div>
+        <div  [innerHTML]="selectedArticle.description" ></div>
+        <ng-container *ngIf="selectedArticle.fileDataList.length>0" >
+          <hr class="border border-primary border-3">
+          <div class="btn-group" role="group" aria-label="Basic outlined example">
+            <ng-container *ngFor="let file of selectedArticle.fileDataList">
+              <a  type="button" [href]="file.filePath" class="btn btn-outline-primary" target="_blank">{{file.description}}</a>
+            </ng-container>
+          </div>
+        </ng-container>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

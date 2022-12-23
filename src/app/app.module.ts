@@ -9,6 +9,7 @@ import { ArticlesComponent } from './articles/articles.component';
 import { CategoryComponent } from './category/category.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShortenPipe } from './shorten.pipe';
+// import { CKEditorModule } from '@ckeditor/ckeditor5-angular'; //do ckeditor 5
 import { CKEditorModule } from 'ckeditor4-angular';
 
 @NgModule({

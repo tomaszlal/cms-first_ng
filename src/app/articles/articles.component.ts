@@ -1,16 +1,18 @@
-import { Component, OnInit, ɵinternalCreateApplication } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ɵinternalCreateApplication } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Articles, Category, PageArticles } from '../model/model';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Articles, Category, FileData, PageArticles } from '../model/model';
 import { HttpService } from '../service/http.service';
 
 @Component({
   selector: 'app-articles',
   templateUrl: './articles.component.html',
-  styleUrls: ['./articles.component.css']
+  styleUrls: ['./articles.component.css'],
+  encapsulation: ViewEncapsulation.Emulated  //przekazanie styklów w innerhtml
 })
 export class ArticlesComponent implements OnInit {
 
-  title = 'cms-first-ng';
+  title = 'Pomocnik Technik Informatyk';
   listArticles: Array<Articles> = new Array();
   listCaregories: Array<Category> = new Array();
   listOfSelectedCatagoriesToView: Array<Category> = new Array();
@@ -31,11 +33,12 @@ export class ArticlesComponent implements OnInit {
   })
 
   selectedArticle: any = {
-    title : "hffhffgh",
-    description : "hfhfhhfg"
+    title: "hffhffgh",
+    description: "hfhfhhfg",
+    fileDataList: []
   };
 
-  constructor(private httpService: HttpService,) {
+  constructor(private httpService: HttpService, private _sanitizer: DomSanitizer) {
 
   }
 
@@ -51,6 +54,7 @@ export class ArticlesComponent implements OnInit {
 
   }
 
+  //pobranie wszysstkich artykułów do wykasowania w tm pliku ?
   public getArticles() {
     this.httpService.getAllArticles().subscribe((articlesList) => {
       articlesList.forEach((articles) => {
@@ -73,9 +77,9 @@ export class ArticlesComponent implements OnInit {
 
     //test czy jest zaznaczony jakas kategoria
 
-    if (this.formCategoryToView.valid){
+    if (this.formCategoryToView.valid) {
       // console.log("Zaznaczona min 1 pozycja w kategorii");
-      this.httpService.getPageArticlesByCategory(this.listOfSelectedCatagoriesToView,page,size).subscribe((page)=>{
+      this.httpService.getPageArticlesByCategory(this.listOfSelectedCatagoriesToView, page, size).subscribe((page) => {
         console.log(page);
         if (page.totalPages != null) {
           this.totalPages = page.totalPages;
@@ -137,8 +141,8 @@ export class ArticlesComponent implements OnInit {
 
 
   onCheckChange(event: any) {
-    this.pageNumber=0;
-    this.listOfSelectedCatagoriesToView=[];
+    this.pageNumber = 0;
+    this.listOfSelectedCatagoriesToView = [];
 
     const listOfCategories: FormArray = this.getArticleListOfCategory as FormArray;
 
@@ -162,7 +166,7 @@ export class ArticlesComponent implements OnInit {
         if (category.id == event.target.value) {
           let i: number = 0;
 
-          listOfCategories.controls.forEach((selected: any) =>{
+          listOfCategories.controls.forEach((selected: any) => {
             if (selected.value.id == event.target.value) {
               listOfCategories.removeAt(i);
               listOfCategories.controls.forEach((itemControl) => {
@@ -184,7 +188,10 @@ export class ArticlesComponent implements OnInit {
 
   //ustawienie artykułu do okna modalego
   public setArticleToContext(article: Articles) {
-    this.selectedArticle = article;
+    this.selectedArticle.title = article.title;
+    this.selectedArticle.description = this._sanitizer.bypassSecurityTrustHtml(article.description ? article.description : "");//akcptowanie styli z ckeditora
+    this.selectedArticle.fileDataList = article.fileDataList;
+
   }
 
   //getters do formularza
