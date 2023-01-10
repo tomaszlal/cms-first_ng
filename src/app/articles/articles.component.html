@@ -13,14 +13,13 @@
           <br>
         </ng-container>
       </div>
-      <h5>Data publikacji</h5>
     </div>
     <div class="col">
       <div class="row align-items-baseline">
         <div class="col-3">
-          <form class="d-flex justify-content-end">
-            <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+          <form class="d-flex justify-content-end" [formGroup]="formSearchText">
+            <input class="form-control" type="search" formControlName="searchText" placeholder="Szukaj" aria-label="Search" (ngModelChange)="searchTextInArticles()">
+
           </form>
         </div>
         <div class="col d-flex justify-content-end">

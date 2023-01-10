@@ -1,4 +1,4 @@
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Articles, Category, PageArticles } from '../model/model';
@@ -27,11 +27,23 @@ export class HttpService {
     return this.http.post<PageArticles>(this.apiUrl + "/articlebycategory?page=" + page + "&size=" + size, listOfSelectedCategories);
   }
 
+  getPageArticlesBySearchText(searchText: string, page: number, size: number): Observable<PageArticles> {
+    const queryParams : HttpParams = new HttpParams().set("searchtext",searchText).set("page", String(page)).set("size",String(size));
+    return this.http.get<PageArticles>(this.apiUrl+"/search",{params:queryParams});
+  }
   saveCategory(category: Category): Observable<Category> {
     return this.http.post<Category>(this.apiUrl + "/addcategory", category);
   }
 
   saveArticle(article: Articles): Observable<Articles> {
     return this.http.post<Articles>(this.apiUrl + "/addarticle", article);
+  }
+
+  updateArticle(article: Articles): Observable<Articles> {
+    return this.http.put<Articles>(this.apiUrl + "/updatearticle", article);
+  }
+
+  deleteArticle(id: number): Observable<Array<Articles>> {
+    return this.http.delete<Array<Articles>>(this.apiUrl + "/deletearticle/" + id);
   }
 }

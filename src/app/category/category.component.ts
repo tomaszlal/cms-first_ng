@@ -5,6 +5,7 @@ import { Articles, Category, FileData } from '../model/model';
 import { Clipboard } from '@angular/cdk/clipboard';  //obsługa schowka
 import { FileService } from '../service/file.service';
 import { HttpService } from '../service/http.service';
+import { Router } from '@angular/router';
 // import * as  ClassicEditor  from '@ckeditor/ckeditor5-build-classic'; // do ckeditor5
 
 @Component({
@@ -16,6 +17,7 @@ export class CategoryComponent implements OnInit {
 
   // public Editor:any = ClassicEditor; do ckeditor 5
 
+  modeCreateNew: boolean = true;//wybór trybu edycja / twórz nowy wartośc true-twórz nowy
 
   listArticles: Array<Articles> = new Array();
 
@@ -30,6 +32,9 @@ export class CategoryComponent implements OnInit {
   currentFile?: File;
   descriptionFile: string = "";
   message: string = "";
+
+  articleToDelete:Articles = {};
+  idArticleToDelete:number = 0;
 
 
   //formularz dodawania kategorii
@@ -53,7 +58,7 @@ export class CategoryComponent implements OnInit {
     filesInArticle: new FormArray([])
   })
 
-  constructor(private httpService: HttpService, private fileService: FileService, private clipboard: Clipboard) {
+  constructor(private httpService: HttpService, private fileService: FileService, private clipboard: Clipboard, private router: Router) {
 
   }
 
@@ -63,6 +68,7 @@ export class CategoryComponent implements OnInit {
     this.getArticles();
     console.log(this.listOfFiles);
     console.log(this.listCategories);
+    console.log(`tryb NOWY ARTYKUL: ${this.modeCreateNew}`);
   }
 
   //zapisuje nowa kategorie artykulu do bazu danych
@@ -76,7 +82,8 @@ export class CategoryComponent implements OnInit {
     this.httpService.saveCategory(newCategory).subscribe((category) => {
       console.log(category);
       this.listCategories.push(category);
-      this.categoryForm.reset();
+      this.clearFormArticle();
+      this.router.navigateByUrl("/");
     })
   }
 
@@ -92,6 +99,7 @@ export class CategoryComponent implements OnInit {
 
   //pobranie wszystkich categorii z abazy danych
   public getCategories() {
+    this.listCategories.length = 0;
     this.httpService.getAllCategories().subscribe((categoryList) => {
       categoryList.forEach((category) => {
         category.checked = false;
@@ -111,23 +119,69 @@ export class CategoryComponent implements OnInit {
     })
   }
 
-  //zapisuje nowy artykuł do bazy danych
+  //zapisuje nowy artykuł do bazy danych lub uaktualnia
   public saveArticleToDb() {
 
-    const newArticle: Articles = {
-      title: this.getArticleTitle?.value,
-      description: this.getArticleDescription?.value,
-      publicationDate: this.getArticlePublicationDate?.value,
-      categoryList: this.getArticleListOfCategory?.value,
-      fileDataList: this.getFilesInArticle?.value
+    if (this.modeCreateNew){ //zapisuje nowy artykul do db
+      const newArticle: Articles = {
+        title: this.getArticleTitle?.value,
+        description: this.getArticleDescription?.value,
+        publicationDate: this.getArticlePublicationDate?.value,
+        categoryList: this.getArticleListOfCategory?.value,
+        fileDataList: this.getFilesInArticle?.value
+      }
+      console.log(newArticle);
+      this.httpService.saveArticle(newArticle).subscribe((article) => {
+        console.log(article);
+        this.clearFormArticle();
+      });
+    }else{//zapisuje uaktualnia artykuł w bazy danych
+      if (this.getArticleFromSelectForm?.value != null) {
+        const art: Articles = this.getArticleFromSelectForm.value;
+        const newArticle: Articles = {
+          id: art.id,
+          title: this.getArticleTitle?.value,
+          description: this.getArticleDescription?.value,
+          publicationDate: this.getArticlePublicationDate?.value,
+          categoryList: this.getArticleListOfCategory?.value,
+          fileDataList: this.getFilesInArticle?.value
+        }
+        console.log(newArticle);
+        this.httpService.updateArticle(newArticle).subscribe((article) => {
+          console.log(article);
+          this.clearFormArticle();
+        });
+      }
     }
-    console.log(newArticle);
-    this.httpService.saveArticle(newArticle).subscribe((article) => {
-      console.log(article);
-      this.articleForm.reset();
-      this.setArticleDescription("");
-    });
+
+
+    this.router.navigate(['/']);
   }
+
+
+  //przesłanie id artykułu do usunięcia
+  public prepareArticleForDeletion() {
+
+    if (this.getArticleFromSelectForm?.value != null) {
+      this.articleToDelete = this.getArticleFromSelectForm.value; // pobranie wybranego do edycji artykułu
+      this.idArticleToDelete = this.articleToDelete.id != undefined ? this.articleToDelete.id:0 ;
+      console.log(this.articleToDelete);
+
+    }
+  }
+
+  public deleteArticle() {
+
+    if (this.articleToDelete != undefined){
+      this.listArticles.length=0;
+      this.httpService.deleteArticle(this.idArticleToDelete).subscribe(articles =>{
+        this.listArticles = articles;
+      })
+    }
+    this.clearFormArticle();
+  }
+
+
 
 
   // funkcja  wypełniająca listę FormArray w formularzu wybranymi kategoriami niezbędnie dla validate.required
@@ -187,6 +241,8 @@ export class CategoryComponent implements OnInit {
 
   //wypełnia danymi wybranego do edycji artykułu formularz edycji i dodawania nowego artykułu
   public insertAarticleToEditForm() {
+    this.modeCreateNew = false;
+
     const listOfCategories: FormArray = this.getArticleListOfCategory as FormArray;  //ustawienie zmiennej (powiązanie wskażnik) tablicy FormArray zawierającej FormControl z metodami Validacji
     listOfCategories.clear();           //wyczyszczenie starej tablicy formarray
 
@@ -215,11 +271,11 @@ export class CategoryComponent implements OnInit {
         })
       }
       console.log(listOfCategories);
-      if (art.fileDataList != undefined){
+      if (art.fileDataList != undefined) {
         const fileList: Array<FileData> = art.fileDataList;
-        this.listOfFiles.forEach((file) =>{
+        this.listOfFiles.forEach((file) => {
           file.checked = false;
-          fileList.forEach((fileFromArticleEdit) =>{
+          fileList.forEach((fileFromArticleEdit) => {
             if (file.id == fileFromArticleEdit.id) {
               file.checked = true;
               listOfFilesInArticle.push(new FormControl(file))
@@ -261,6 +317,31 @@ export class CategoryComponent implements OnInit {
       this.selectedFiles = [];
     }
   }
+
+
+
+  //zmiana trybu funkcja wywołływana przyciskiem zmiany trybu
+  public changeMode() {
+    this.modeCreateNew = !this.modeCreateNew;
+    console.log(this.modeCreateNew);
+    this.clearFormArticle();
+  }
+
+  //czyszczenie formularza
+  private clearFormArticle() {
+    const listOfCategories: FormArray = this.getArticleListOfCategory as FormArray;  //ustawienie zmiennej (powiązanie wskażnik) tablicy FormArray zawierającej FormControl z metodami Validacji
+    listOfCategories.clear();           //wyczyszczenie starej tablicy formarray
+    const listOfFilesInArticle: FormArray = this.getFilesInArticle as FormArray;  //ustawienie zmiennej (powiązanie wskażnik) tablicy FormArray zawierającej FormControl z metodami Validacji
+    listOfFilesInArticle.clear();
+    this.setArticleTitle("");                //wstawienie tytułu do pola,
+    this.setArticleDescription("");    //wstawienie opisu  do pola ck editora,
+    this.setArticlePublicationDate("");
+    this.getCategories();
+    this.getListOfFiles();
+    this.listCategories.forEach((cat) => cat.checked = false);
+    this.listOfFiles.forEach((file) => file.checked = false);
+  }
+
 
   //obsługa schowka kopiowanie do schowka
   public copyText(textToCopy: any) {
@@ -317,7 +398,7 @@ export class CategoryComponent implements OnInit {
     this.articleForm.get('articleDescription')?.setValue(description);
   }
 
-  public setArticlePublicationDate(publicationDate:any){
+  public setArticlePublicationDate(publicationDate: any) {
     this.articleForm.get('articlePublicationDate')?.setValue(publicationDate);
   }
 

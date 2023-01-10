@@ -2,6 +2,17 @@
   <div class="row">
     <div class="col-2">
       <!-- lista w bloku kategroii ze scrolem auto -->
+      <div class="border border-secondary rounded-2 p-2 m-2">
+        <div class="h5 text-muted">Tryb nowy/edycja</div>
+        <hr>
+        <input type="checkbox" class="btn-check" id="btn-mode" autocomplete="off" [(ngModel)]="modeCreateNew" (click)="changeMode()">
+        <label *ngIf="modeCreateNew;else modeEdit" class="btn btn-outline-primary" for="btn-mode">TRYB UTWÓRZ NOWY</label>
+        <ng-template #modeEdit>
+          <label class="btn btn-danger" for="btn-mode">TRYB EDYCJI ARTYKUŁU</label>
+        </ng-template>
+
+      </div>
+
 
       <div class="border border-secondary rounded-2 p-2 m-2">
         <div class="h5 text-muted">Dodaj kategorię artykułu</div>
@@ -34,7 +45,7 @@
         <form [formGroup]="selectArticleToEditForm" (submit)="insertAarticleToEditForm()"   >
 
           <div class="mb-3">
-            <select class="form-select" formControlName="articleNameToEdit" aria-label="Default select example">
+            <select class="form-select" formControlName="articleNameToEdit" aria-label="Default select example" >
               <!-- <option [ngValue]="null" selected>Wybierz artykuł ...</option> -->
               <option *ngFor="let article of listArticles" [ngValue]="article">{{article.title}}</option>
 
@@ -43,7 +54,7 @@
 
           <hr>
           <button class="btn btn-primary" [disabled]="!selectArticleToEditForm.valid" >Edytuj</button>
-
+          <button type="button" class="btn btn-danger" [disabled]="!selectArticleToEditForm.valid" data-bs-toggle="modal" data-bs-target="#modalDeleteArticle" (click)="prepareArticleForDeletion()" >Usuń</button>
 
 
         </form>
@@ -145,7 +156,8 @@
           <hr>
           <div class="row">
             <div class="col d-flex justify-content-end">
-              <button class="btn btn-primary" id="buttonAddBill" [disabled]="!articleForm.valid">Dodaj artykuł</button>
+              <button *ngIf="!modeCreateNew" class="btn btn-danger" id="buttonSaveArticle" [disabled]="!articleForm.valid">Zapisz artykuł</button>
+              <button *ngIf="modeCreateNew" class="btn btn-primary" id="buttonAddArticle" [disabled]="!articleForm.valid">Dodaj artykuł</button>
             </div>
 
           </div>
@@ -156,4 +168,28 @@
 
   </div>
 
+</div>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDeleteArticle">
+  Launch static backdrop modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="modalDeleteArticle" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalDeleteArticleLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDeleteArticleLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Czy usunąć artykył : {{articleToDelete.title}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Anuluj</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"(click)="deleteArticle()">USUŃ</button>
+      </div>
+    </div>
+  </div>
 </div>

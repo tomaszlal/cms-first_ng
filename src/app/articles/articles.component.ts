@@ -32,6 +32,10 @@ export class ArticlesComponent implements OnInit {
     categoryToView: new FormArray([], Validators.required)
   })
 
+  formSearchText: FormGroup = new FormGroup({
+    searchText: new FormControl('', Validators.required)
+  })
+
   selectedArticle: any = {
     title: "hffhffgh",
     description: "hfhfhhfg",
@@ -43,13 +47,12 @@ export class ArticlesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getArticles();
+    // this.getArticles();   //nie ma potrzeby pobierania wszystkich artykulow skoro pobiera przez pagearticle
     this.getCategories();
     this.getPageArticles(this.pageNumber, this.sizeArticlesOnPage);
     console.log(this.listArticles[0]);
 
     console.log(this.pageArticles);
-    console.log(this.listArticles);
     console.log(this.listCaregories);
 
   }
@@ -76,8 +79,31 @@ export class ArticlesComponent implements OnInit {
   public getPageArticles(page: number, size: number) {
 
     //test czy jest zaznaczony jakas kategoria
+    // drugi test do przygotowania to czy w polu serch jest wprowadzony tekst
 
-    if (this.formCategoryToView.valid) {
+    if (this.formSearchText.valid) {
+      this.httpService.getPageArticlesBySearchText(this.getSearchText, page, size).subscribe(page => {
+        console.log(page);
+        if (page.totalPages != null) {
+          this.totalPages = page.totalPages;
+          console.log(this.totalPages);
+        }
+        if (page.pageable?.pageNumber != null) {
+          console.log(page.pageable.pageNumber);
+          this.pageNumber = page.pageable.pageNumber;
+        }
+        this.pageNumbers = [];
+        for (let i = 0; i < this.totalPages; i++) {
+          this.pageNumbers[i] = i + 1;
+
+
+        }
+
+        this.pageArticles = page;
+      })
+    }
+
+    else if (this.formCategoryToView.valid) {
       // console.log("Zaznaczona min 1 pozycja w kategorii");
       this.httpService.getPageArticlesByCategory(this.listOfSelectedCatagoriesToView, page, size).subscribe((page) => {
         console.log(page);
@@ -139,6 +165,11 @@ export class ArticlesComponent implements OnInit {
     this.getPageArticles(0, this.sizeArticlesOnPage);
   }
 
+  //wywołana funkcja z przycisku szukaj
+  searchTextInArticles() {
+    this.getPageArticles(0, this.sizeArticlesOnPage);
+  }
+
 
   onCheckChange(event: any) {
     this.pageNumber = 0;
@@ -194,9 +225,15 @@ export class ArticlesComponent implements OnInit {
 
   }
 
-  //getters do formularza
+  //gettersy do formularza
   public get getArticleListOfCategory() {
     return this.formCategoryToView.get('categoryToView');
   }
+
+
+  public get getSearchText() {
+    return this.formSearchText.get('searchText')?.value;
+  }
+
 
 }
